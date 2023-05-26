@@ -1,28 +1,35 @@
-const { gql } = require('apollo-server-express');
 
-const typeDefs = gql`
-  type Tech {
-    _id: ID!
-    name: String!
-  }
+const { ApolloServer, gql } = require('apollo-server');
 
-  type Matchup {
-    _id: ID!
-    tech1: String!
-    tech2: String!
-    tech1_votes: Int
-    tech2_votes: Int
-  }
+const typeDefs = gql
+  `type User {
+    id: ID!
+    username: String!
+    email: String!
+    password: String!
+    savedBooks: [Book!]!
+}
 
-  type Query {
-    tech: [Tech]
-    matchups(_id: String): [Matchup]
-  }
+type Book {
+    id: ID!
+    title: String!
+    author: String!
+    description: String!
+}
 
-  type Mutation {
-    createMatchup(tech1: String!, tech2: String!): Matchup
-    createVote(_id: String!, techNum: Int!): Matchup
-  }
-`;
+input BookInput {
+    title: String!
+    author: String!
+    description: String!
+}
+
+type Query {
+    getUser(id: ID!): User
+}
+
+type Mutation {
+    createUser(username: String!, email: String!, password: String!): User
+    saveBook(userId: ID!, book: BookInput!): User
+}`
 
 module.exports = typeDefs;

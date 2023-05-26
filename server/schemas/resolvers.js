@@ -1,29 +1,44 @@
-const { Tech, Matchup } = require('../models');
+const { v4: uuidv4 } = require('uuid');
+
+const users = [];
 
 const resolvers = {
   Query: {
-    tech: async () => {
-      return Tech.find({});
-    },
-    matchups: async (parent, { _id }) => {
-      const params = _id ? { _id } : {};
-      return Matchup.find(params);
-    },
+    getUser: (parent, { id }) => {
+      return users.find(user => user.id === id);
+    }
   },
   Mutation: {
-    createMatchup: async (parent, args) => {
-      const matchup = await Matchup.create(args);
-      return matchup;
+    createUser: (parent, { username, email, password }) => {
+      const newUser = {
+        id: uuidv4(),
+        username,
+        email,
+        password,
+        savedBooks: []
+      };
+      users.push(newUser);
+      return newUser;
     },
-    createVote: async (parent, { _id, techNum }) => {
-      const vote = await Matchup.findOneAndUpdate(
-        { _id },
-        { $inc: { [`tech${techNum}_votes`]: 1 } },
-        { new: true }
-      );
-      return vote;
-    },
+    saveBook: (parent, { userId, book }) => {
+      const user = users.find(user => user.id === userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      const newBook = {
+        id: uuidv4(),
+        ...book
+      };
+      user.savedBooks.push(newBook);
+      return user;
+    }
   },
+  User: {
+    savedBooks: (parent) => {
+      // Resolve savedBooks for a user
+      return parent.savedBooks;
+    }
+  }
 };
 
 module.exports = resolvers;

@@ -1,11 +1,14 @@
 const { v4: uuidv4 } = require('uuid');
-
+const User = require('../models/User')
 const users = [];
 
 const resolvers = {
   Query: {
-    getUser: (parent, { id }) => {
-      return users.find(user => user.id === id);
+    getUser: async (parent, { id }, context) => {
+      if (context.user) {
+
+        return await User.findOne({ _id: context.user._id });
+      }
     }
   },
   Mutation: {
@@ -21,7 +24,7 @@ const resolvers = {
       return newUser;
     },
     saveBook: (parent, { userId, book }) => {
-      const user = users.find(user => user.id === userId);
+      const user = User.find(user => user.id === userId);
       if (!user) {
         throw new Error('User not found');
       }

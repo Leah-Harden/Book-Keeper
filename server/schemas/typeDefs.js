@@ -1,13 +1,13 @@
 
-const { ApolloServer, gql } = require('apollo-server');
+const { gql } = require('apollo-server');
 
-const typeDefs = gql
-  `type User {
+const typeDefs = gql`
+    type User {
     id: ID!
     username: String!
     email: String!
     password: String!
-    savedBooks: [Book!]!
+    savedBooks: [Book]
 }
 
 type Book {
@@ -15,21 +15,34 @@ type Book {
     title: String!
     author: String!
     description: String!
+    image: String!
+    link: String!
 }
 
 input BookInput {
+    bookId: String!
     title: String!
     author: String!
     description: String!
+    image: String!
+    link: String!
 }
 
 type Query {
-    getUser(id: ID!): User
+    getUser: User
+}
+type Auth {
+    token: ID!
+    user: User
 }
 
 type Mutation {
-    createUser(username: String!, email: String!, password: String!): User
-    saveBook(userId: ID!, book: BookInput!): User
+    createUser(username: String!, email: String!, password: String!): Auth
+    saveBook(book: BookInput!): User
 }`
+
+// login: Accepts an email and password as parameters; returns an Auth type.
+
+//     addUser: Accepts a username, email, and password as parameters; returns an Auth type.
 
 module.exports = typeDefs;

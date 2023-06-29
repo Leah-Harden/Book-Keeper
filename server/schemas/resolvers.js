@@ -1,6 +1,5 @@
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('`uuid');
 const User = require('../models/User')
-const users = [];
 
 const resolvers = {
   Query: {
@@ -12,7 +11,7 @@ const resolvers = {
     }
   },
   Mutation: {
-    createUser: (parent, { username, email, password }) => {
+    createUser: (context, { username, email, password }) => {
       const newUser = {
         id: uuidv4(),
         username,
@@ -23,7 +22,7 @@ const resolvers = {
       users.push(newUser);
       return newUser;
     },
-    saveBook: (parent, { userId, book }) => {
+    saveBook: (context, { userId, book }) => {
       const user = User.find(user => user.id === userId);
       if (!user) {
         throw new Error('User not found');
@@ -34,14 +33,13 @@ const resolvers = {
       };
       user.savedBooks.push(newBook);
       return user;
-    }
-  },
-  User: {
-    savedBooks: (parent) => {
+    },
+    savedBooks: (context) => {
       // Resolve savedBooks for a user
-      return parent.savedBooks;
+      return context.savedBooks;
     }
+
   }
 };
 
-module.exports = resolvers;
+module.exports = resolvers
